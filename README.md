@@ -18,12 +18,14 @@ agent ◀── result(runId) ── Executor app ◀── POST callback URL + 
 
 1. `dispatch` saves a run, mints a single-use token, and POSTs the Bridge bot's routine webhook
    with the target, the prompt, a callback URL and the token.
-2. The Bridge bot's routine hands the prompt to the target teammate and waits for its reply.
-3. The routine POSTs the reply to the callback URL. The app checks the token and stores the result.
+2. The Bridge bot's routine saves the callback details to a file, hands the prompt to the target
+   teammate, and stops. A routine run ends when the bot messages another bot, so it can't wait.
+3. The target's reply wakes Bridge. Bridge reads the saved file and POSTs the reply to the
+   callback URL. The app checks the token and stores the result.
 4. `result` reads the stored run.
 
-The roster works the same way: `refreshTeammates` asks Bridge for the list of your bots, the app
-caches it, and `teammates` serves the cache instantly.
+The roster is simpler: `refreshTeammates` asks Bridge for the list of your bots, Bridge reports
+it from inside the webhook run, the app caches it, and `teammates` serves the cache instantly.
 
 ## Setup
 
@@ -65,6 +67,8 @@ not the primary bot. Grok Bot's docs promise none of this, so treat it as observ
   one watching and no approval card.
 - **A non-primary bot can delegate.** Bridge messaged the target bot directly from inside the
   webhook run, and the target replied in that thread.
+- **A routine run ends when the bot messages another bot.** The reply arrives in a later turn that
+  no longer has the webhook body. That is why Bridge saves each run to a file before handing over.
 - **The webhook answer carries a run id.** Grok Bot answers `{"success":true,"runUuid":"..."}`.
   The app keeps it in `webhookReply`; there is still no API to look that run up.
 - **Cloudflare refuses Python's urllib.** A callback sent with the default `Python-urllib`
@@ -90,6 +94,9 @@ not the primary bot. Grok Bot's docs promise none of this, so treat it as observ
 - Each run gets its own random token. The app stores only its SHA-256 digest and accepts one
   report per run, so a leaked token can't rewrite a finished run.
 - The Bridge routine posts only to callback URLs under the prefix written into its instruction.
+- Between hand-over and reply, a run's token sits in a file under `/workspace/bridge-runs/` on the
+  bots' shared computer, where your other bots can read it. It completes that one run and nothing
+  else, and Bridge deletes the file once the report is accepted.
 - Whoever can call `dispatch` can make your bots act with whatever access they have. The app runs
   per Executor user, with that user's linked Bridge bot.
 - The `routine` provider declares no `hosts` because Grok Bot's webhook host isn't documented.
