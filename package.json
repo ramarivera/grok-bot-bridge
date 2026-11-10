@@ -1,0 +1,19 @@
+{
+  "name": "@executor.executor.community/grok-bot-bridge",
+  "private": true,
+  "type": "module",
+  "description": "Send prompts to Grok Bot teammates through one router bot and read their results.",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test",
+    "check": "biome check ."
+  },
+  "dependencies": {
+    "apps": "0.0.1-beta.95"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "@types/bun": "1.3.9",
+    "typescript": "7.0.2"
+  }
+}
