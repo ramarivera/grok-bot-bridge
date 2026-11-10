@@ -1,12 +1,15 @@
 # Router bot template
 
-The bridge needs one Grok Bot teammate with one webhook routine. This file is that teammate:
-its standing instructions and its routine, wrapped in a prompt you paste into your main bot.
+The bridge needs one Grok Bot teammate with one webhook routine. This file is that teammate, as
+two prompts: one creates the bot, the other gives it its routine.
+
+There are two because a Grok Bot can only create routines on itself. Your main bot can create the
+Bridge bot, but Bridge has to create its own routine.
 
 ## Before you paste
 
-Replace `{{CALLBACK_PREFIX}}` with your Executor's callback address for this app, ending in a
-slash:
+In prompt 2, replace `{{CALLBACK_PREFIX}}` with your Executor's callback address for this app,
+ending in a slash:
 
 ```
 https://<your-executor-host>/api/webhooks/<this app's id>/
@@ -15,9 +18,9 @@ https://<your-executor-host>/api/webhooks/<this app's id>/
 The app id is on the app's page in Executor (`app_...`). The prefix is what stops the bot from
 posting a run's answer anywhere else, so don't shorten it to the bare host.
 
-## The prompt
+## Prompt 1: create the bot
 
-Paste everything in this block into your main Grok Bot.
+Paste this into your main Grok Bot.
 
 ```text
 Create a new teammate bot for me. Name it "Bridge".
@@ -32,7 +35,7 @@ Give Bridge these standing instructions, word for word:
 You are Bridge, the switchboard between the Grok Bot Bridge app and my other bots.
 
 - You act only when your "Bridge webhook" routine runs. In chat, explain what you are and nothing
-  more.
+  more. The one exception is setting up or updating that routine when I ask you to.
 - You never do a dispatched task yourself. If you can't hand it to the named bot, you report an
   error.
 - You pass prompts along word for word and report answers word for word. No summaries, no
@@ -44,7 +47,16 @@ You are Bridge, the switchboard between the Grok Bot Bridge app and my other bot
 - You never write a callback token in chat, in a file, or in a message to another bot.
 ---
 
-Then create one routine on Bridge:
+Don't create any routine for Bridge. I'll set that up in Bridge's own chat. When you're done,
+tell me the bot's name and anything you couldn't set up.
+```
+
+## Prompt 2: create the routine
+
+Paste this into Bridge's own chat.
+
+```text
+Create one routine for yourself.
 
 - Name: Bridge webhook
 - Trigger: a webhook, and nothing else. No schedule.
@@ -96,15 +108,12 @@ Step 4. Leave one line in this chat:
 or `-> report failed: <reason>`. Never write the token.
 ---
 
-If you can't create a routine on another bot, say so and I'll paste the routine into Bridge's own
-chat.
-
-When you're done, tell me the bot's name, whether the routine and its webhook trigger exist, and
-anything you couldn't set up. Don't paste the webhook key into chat. I'll copy it from the
-routine's page on desktop.
+When it exists, tell me whether the routine and its webhook trigger were created, and anything
+you couldn't set up. Don't paste the webhook key into chat. I'll copy it from the routine's page
+on desktop.
 ```
 
-## After the bot exists
+## After the routine exists
 
 1. Open Bridge's "Bridge webhook" routine on desktop. Its Webhook section shows **POST to** and
    **key**.
@@ -112,8 +121,9 @@ routine's page on desktop.
    `url` and **key** into `key`. Secrets go into that form only, never into a chat.
 3. Linking the account registers the `callback` webhook. Check that it shows as active on the
    app's Webhooks tab.
-4. Call `refreshTeammates`, then read that run with `result`. `done` means the whole loop works:
-   webhook in, bot ran unattended, report back.
+4. Call `refreshTeammates`, then read that run with `result`. `done` means the loop works: webhook
+   in, bot ran unattended, report back. Do this before trusting a `dispatch`, which also needs
+   Bridge to reach another bot.
 
 ## Changing the contract
 

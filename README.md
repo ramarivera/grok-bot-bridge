@@ -30,8 +30,8 @@ caches it, and `teammates` serves the cache instantly.
 You need this app in your Executor and one Grok Bot teammate.
 
 1. Deploy this directory to Executor (see Development).
-2. Create the Bridge bot from [template/router-bot.md](template/router-bot.md). It is one prompt
-   you paste into your main bot, with one placeholder to fill in.
+2. Create the Bridge bot from [template/router-bot.md](template/router-bot.md). It is two prompts:
+   one for your main bot and one for Bridge itself, with one placeholder to fill in.
 3. Connect the app's `router` account with the routine's **POST to** URL and **key**.
 4. Run `refreshTeammates` and read the run. `done` proves the loop end to end.
 
