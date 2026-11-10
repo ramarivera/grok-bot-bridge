@@ -10,13 +10,14 @@ export type RunRow = {
   token_hash: string;
   result: string | null;
   error: string | null;
+  webhook_reply: string | null;
   created_at: number;
   deadline_at: number;
   completed_at: number | null;
 };
 
 export const RUN_COLUMNS =
-  "id, action, target, status, token_hash, result, error, created_at, deadline_at, completed_at";
+  "id, action, target, status, token_hash, result, error, webhook_reply, created_at, deadline_at, completed_at";
 
 export type RunView = {
   runId: string;
@@ -25,6 +26,8 @@ export type RunView = {
   status: PublicStatus;
   result: string | null;
   error: string | null;
+  /** What Grok Bot answered when the routine webhook was called: status and the start of the body. */
+  webhookReply: string | null;
   createdAt: string;
   completedAt: string | null;
 };
@@ -37,6 +40,7 @@ export function view(row: RunRow, now: number): RunView {
     status: publicStatus(row.status, row.deadline_at, now),
     result: row.result,
     error: row.error,
+    webhookReply: row.webhook_reply,
     createdAt: new Date(row.created_at).toISOString(),
     completedAt: row.completed_at === null ? null : new Date(row.completed_at).toISOString(),
   };

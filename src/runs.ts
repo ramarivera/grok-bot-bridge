@@ -70,6 +70,13 @@ async function send(
       `Could not reach the routine webhook: ${error instanceof Error ? error.message : "network error"}`,
     );
   }
+  // Grok Bot returns no run id and has no status API, so its answer is the only trace of the call.
+  const body = await response.text().catch(() => "");
+  ctx.sql.exec(
+    "UPDATE runs SET webhook_reply = ? WHERE id = ?",
+    `HTTP ${response.status} ${body.slice(0, 500)}`.trim(),
+    runId,
+  );
   // Grok Bot documents 200 as "run started" and any other answer as "no run started".
   if (response.status !== 200)
     return fail(
