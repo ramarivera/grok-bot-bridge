@@ -67,6 +67,8 @@ not the primary bot. Grok Bot's docs promise none of this, so treat it as observ
   one watching and no approval card.
 - **A non-primary bot can delegate.** Bridge messaged the target bot directly from inside the
   webhook run, and the target replied in that thread.
+- **A dispatch makes the full round trip.** A trivial prompt went agent to app to Bridge to the
+  target bot and back in 44 seconds, with the answer stored word for word.
 - **A routine run ends when the bot messages another bot.** The reply arrives in a later turn that
   no longer has the webhook body. That is why Bridge saves each run to a file before handing over.
 - **The webhook answer carries a run id.** Grok Bot answers `{"success":true,"runUuid":"..."}`.
