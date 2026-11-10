@@ -94,6 +94,12 @@ export function buildPayload(run: {
 }
 
 /** Routine webhooks are HTTPS only; anything else is a setup mistake. */
+/**
+ * The only host the routine key may be sent to. Grok Bot showed routine webhooks on
+ * api2.cursor.sh on 2026-11-10; its docs name no host, so widen this if that changes.
+ */
+export const WEBHOOK_HOST = "*.cursor.sh";
+
 export function routineUrl(raw: string): string {
   let url: URL;
   try {
@@ -103,7 +109,19 @@ export function routineUrl(raw: string): string {
   }
   if (url.protocol !== "https:")
     throw new Error("The linked routine webhook URL must use https. Reconnect the account.");
+  if (!isWebhookHost(url.host))
+    throw new Error(
+      `The linked routine webhook URL must be on ${WEBHOOK_HOST}, where Grok Bot serves routine webhooks. Reconnect the account with the routine's "POST to" address.`,
+    );
   return url.href;
+}
+
+/** True for one subdomain level under the pinned domain on the default port, as the host matches it. */
+export function isWebhookHost(host: string): boolean {
+  const suffix = WEBHOOK_HOST.slice(1);
+  if (!host.endsWith(suffix)) return false;
+  const label = host.slice(0, -suffix.length);
+  return label.length > 0 && !label.includes(".") && !label.includes(":");
 }
 
 /** Case-insensitive exact match against the cached roster; returns the roster's spelling. */

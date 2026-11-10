@@ -1,11 +1,13 @@
 import type { MutationContext, QueryContext, WebhookContext } from "apps";
 import { defineProvider, object, plain, secrets, string } from "apps";
+import { WEBHOOK_HOST } from "./protocol.js";
 
 // The router bot's routine webhook: the "POST to" URL and the key shown on the routine's page.
-// No `hosts` yet: the webhook host is whatever Grok Bot shows, and it isn't documented. The app
-// sends the key only to the linked URL, which routineUrl() requires to be https.
+// `hosts` pins the key: app code holds only a handle, and Executor's outbound network swaps in the
+// real key on requests to that host and nowhere else. routineUrl() refuses any other URL up front.
 export const routine = defineProvider({
   name: "Grok Bot routine webhook",
+  hosts: [WEBHOOK_HOST],
   auth: {
     webhook: secrets({
       label: "Routine webhook",

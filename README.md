@@ -207,8 +207,9 @@ never replies.
 - **Dispatch is remote control of your bots.** A prompt sent through the bridge runs with the
   target bot's access. The app runs per Executor user, with that user's linked Bridge bot, so
   access to your Executor is access to your bots.
-- **The routine's key** lives in Executor's account store and is sent only to the linked `url`,
-  which must be https.
+- **The routine's key** lives in Executor's account store and is pinned to `*.cursor.sh`, the host
+  Grok Bot serves routine webhooks from. App code only ever holds a handle; Executor swaps in the
+  real key on requests to that host and nowhere else.
 - **Each run gets its own random token.** The app stores only its SHA-256 digest and accepts one
   report per run, so a leaked token can't rewrite a finished run or touch another one.
 - **Bridge posts to one place.** Its routine refuses any callback URL outside the prefix written

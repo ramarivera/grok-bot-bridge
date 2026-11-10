@@ -123,13 +123,26 @@ describe("publicStatus", () => {
 });
 
 describe("routineUrl", () => {
-  test("accepts https and trims", () => {
-    expect(routineUrl(" https://example.test/hook/1 ")).toBe("https://example.test/hook/1");
+  test("accepts https on Grok Bot's webhook host and trims", () => {
+    expect(routineUrl(" https://api2.cursor.sh/hook/1 ")).toBe("https://api2.cursor.sh/hook/1");
   });
 
   test("rejects http and garbage", () => {
-    expect(() => routineUrl("http://example.test/hook")).toThrow("https");
+    expect(() => routineUrl("http://api2.cursor.sh/hook")).toThrow("https");
     expect(() => routineUrl("not a url")).toThrow("valid URL");
+  });
+
+  test("rejects any host the key is not pinned to", () => {
+    for (const url of [
+      "https://example.test/hook",
+      "https://cursor.sh/hook",
+      "https://a.b.cursor.sh/hook",
+      "https://api2.cursor.sh.evil.test/hook",
+      "https://evilcursor.sh/hook",
+      "https://api2.cursor.sh:8443/hook",
+      "https://api2.cursor.sh@evil.test/hook",
+    ])
+      expect(() => routineUrl(url)).toThrow("*.cursor.sh");
   });
 });
 
