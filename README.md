@@ -116,7 +116,6 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-  autonumber
   participant A as Your agent
   participant E as Executor app
   participant B as Bridge bot
