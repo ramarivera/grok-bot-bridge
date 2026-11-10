@@ -100,8 +100,11 @@ and one of these JSON bodies:
   A dispatch that worked: {"run_id": "<run_id>", "status": "ok", "result": "<the bot's reply>"}
   A roster:               {"run_id": "<run_id>", "status": "ok", "roster": [{"name": "...", "description": "...", "handles": "..."}]}
   Any failure:            {"run_id": "<run_id>", "status": "error", "error": "<what went wrong>"}
-Build the body with a JSON encoder so quotes and line breaks in the reply are escaped. A 200
-answer means the app recorded it. If the POST fails, try twice more, then stop.
+Build the body with a JSON encoder so quotes and line breaks in the reply are escaped. Send it
+with curl, or add the header `User-Agent: grok-bot-bridge/1` yourself: Python's built-in urllib
+client is refused with HTTP 403 before it reaches the app. A 200 answer means the app recorded it.
+A 403 means the network refused your HTTP client, not that the token is wrong, so switch to curl
+and try again. If the POST still fails, try twice more, then stop.
 
 Step 4. Leave one line in this chat:
 `bridge <run_id>: <action> for <target, or "roster"> -> reported`

@@ -56,18 +56,20 @@ Run statuses:
 - `timed_out`: no report arrived before the deadline, 30 minutes unless you pass `timeoutMinutes`.
   A late report is still recorded.
 
-## What is not proven yet
+## What a live test showed
 
-The design leans on three things Grok Bot's docs don't state. Test them before you rely on this.
+Tested on 2026-11-10 against a self-hosted Executor behind Cloudflare, with a Bridge bot that is
+not the primary bot. Grok Bot's docs promise none of this, so treat it as observed, not guaranteed.
 
-- **A non-primary bot delegating.** The docs describe the primary bot coordinating your other
-  bots. They don't say a teammate like Bridge can hand work to another teammate, or that it gets
-  the reply back. If it can't, put the same routine on your primary bot; the app doesn't care
-  which bot hosts it.
-- **Delegation inside an unattended routine run.** Not documented either way.
-- **An unattended outbound POST.** A routine run that raises an approval card nobody answers has
-  it expire after 30 minutes, and the action is not done. If the callback POST needs approval,
-  runs end as `timed_out`. Approve it once with "Always allow" during a watched test.
+- **A webhook run works unattended.** A roster run reported back in 1 minute 39 seconds with no
+  one watching and no approval card.
+- **A non-primary bot can delegate.** Bridge messaged the target bot directly from inside the
+  webhook run, and the target replied in that thread.
+- **The webhook answer carries a run id.** Grok Bot answers `{"success":true,"runUuid":"..."}`.
+  The app keeps it in `webhookReply`; there is still no API to look that run up.
+- **Cloudflare refuses Python's urllib.** A callback sent with the default `Python-urllib`
+  user agent gets HTTP 403 `error code: 1010` from Cloudflare and never reaches the app. curl and
+  other common clients pass. The routine tells the bot to use curl or set its own user agent.
 
 ## Limits
 
@@ -77,6 +79,9 @@ The design leans on three things Grok Bot's docs don't state. Test them before y
 - The webhook response carries no run id and Grok Bot has no status API, so the app can't tell a
   slow teammate from a run that died. `timed_out` covers both.
 - The `roster` schedule refreshes the roster daily. Schedules start paused in Executor.
+- Deploying a new version gives the app a new callback URL and stops the old one. A run that is
+  still pending at that moment can no longer report and ends as `timed_out`. Deploy when nothing
+  is in flight.
 
 ## Security
 
