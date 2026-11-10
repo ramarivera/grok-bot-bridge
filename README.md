@@ -37,14 +37,14 @@ You need this app in your Executor and one Grok Bot teammate.
 
 ## Tools
 
-| Tool | What it does |
-| --- | --- |
-| `dispatch` | Send `prompt` to the teammate named `target`. Returns `runId` at once. |
-| `result` | Read one run by `runId`. |
-| `runs` | Recent runs, newest first, with results cut to 280 characters. |
-| `teammates` | The cached roster: name, description, what each bot handles. |
-| `refreshTeammates` | Ask Bridge for the current roster. Returns a `runId`. |
-| `report` | Record a run's outcome. Only for a Bridge bot that has this app connected as a tool. |
+| Tool               | What it does                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `dispatch`         | Send `prompt` to the teammate named `target`. Returns `runId` at once.               |
+| `result`           | Read one run by `runId`.                                                             |
+| `runs`             | Recent runs, newest first, with results cut to 280 characters.                       |
+| `teammates`        | The cached roster: name, description, what each bot handles.                         |
+| `refreshTeammates` | Ask Bridge for the current roster. Returns a `runId`.                                |
+| `report`           | Record a run's outcome. Only for a Bridge bot that has this app connected as a tool. |
 
 Run statuses:
 

@@ -19,7 +19,7 @@ posting a run's answer anywhere else, so don't shorten it to the bare host.
 
 Paste everything in this block into your main Grok Bot.
 
-````text
+```text
 Create a new teammate bot for me. Name it "Bridge".
 
 What it's for: Bridge is a switchboard. My Grok Bot Bridge app starts Bridge's routine over a
@@ -102,7 +102,7 @@ chat.
 When you're done, tell me the bot's name, whether the routine and its webhook trigger exist, and
 anything you couldn't set up. Don't paste the webhook key into chat. I'll copy it from the
 routine's page on desktop.
-````
+```
 
 ## After the bot exists
 
