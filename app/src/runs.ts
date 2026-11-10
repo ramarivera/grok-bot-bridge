@@ -179,6 +179,41 @@ export const teammates = query(
   },
 );
 
+export const status = query(
+  {
+    description:
+      "Check the setup: whether the callback webhook is registered, which host the linked routine webhook is on, how fresh the roster is, and how many runs are in each stored state. Read-only; it starts no run.",
+    input: object({}),
+  },
+  async (ctx: Qry) => {
+    const account = ctx.user.accounts.router;
+    const route = ctx.sql
+      .exec<{ active: number }>("SELECT active FROM routes WHERE account_id = ?", account.id)
+      .toArray()[0];
+    const mates = roster(ctx.sql, account.id);
+    const refreshedAt = mates.reduce((latest, row) => Math.max(latest, row.refreshed_at), 0);
+    const counts = ctx.sql
+      .exec<{ status: string; n: number }>(
+        "SELECT status, COUNT(*) AS n FROM runs WHERE account_id = ? GROUP BY status",
+        account.id,
+      )
+      .toArray();
+    let webhookHost: string | null = null;
+    try {
+      webhookHost = new URL(account.fields.url).host;
+    } catch {
+      // A malformed URL is reported as null; dispatch explains it in full.
+    }
+    return {
+      callbackRegistered: route?.active === 1,
+      webhookHost,
+      teammates: mates.length,
+      rosterRefreshedAt: refreshedAt === 0 ? null : new Date(refreshedAt).toISOString(),
+      runs: Object.fromEntries(counts.map((row) => [row.status, row.n])),
+    };
+  },
+);
+
 export const report = mutation(
   {
     description:

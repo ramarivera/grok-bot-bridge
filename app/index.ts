@@ -1,11 +1,11 @@
 import { defineApp, router, userInterval } from "apps";
 import { callback } from "./src/callback.js";
 import { requirements } from "./src/provider.js";
-import { dispatch, refreshTeammates, report, result, runs, teammates } from "./src/runs.js";
+import { dispatch, refreshTeammates, report, result, runs, status, teammates } from "./src/runs.js";
 
 export default defineApp(requirements, {
   tools: router(
-    { dispatch, result, runs, teammates, refreshTeammates, report },
+    { dispatch, result, runs, teammates, refreshTeammates, status, report },
     {
       title: "Grok Bot Bridge",
       description:
