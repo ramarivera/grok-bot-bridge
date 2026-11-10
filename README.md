@@ -9,12 +9,7 @@ app works around both limits with one extra bot.
 
 ## How it works
 
-```
-agent ── dispatch(target, prompt) ──▶ Executor app ── POST routine webhook ──▶ Bridge bot
-                                                                                   │ hands the prompt
-                                                                                   ▼ to the target bot
-agent ◀── result(runId) ── Executor app ◀── POST callback URL + run token ── Bridge bot
-```
+![How a dispatch travels: your agent calls the Executor app, the app starts the Bridge bot's routine webhook, Bridge hands the prompt to a teammate bot, the reply wakes Bridge, Bridge posts the answer back, and the agent reads the result](media/how-it-works.gif)
 
 1. `dispatch` saves a run, mints a single-use token, and POSTs the Bridge bot's routine webhook
    with the target, the prompt, a callback URL and the token.
@@ -31,7 +26,7 @@ it from inside the webhook run, the app caches it, and `teammates` serves the ca
 
 You need this app in your Executor and one Grok Bot teammate.
 
-1. Deploy this directory to Executor (see Development).
+1. Deploy the `app/` directory to Executor (see Development).
 2. Create the Bridge bot from [template/router-bot.md](template/router-bot.md). It is two prompts:
    one for your main bot and one for Bridge itself, with one placeholder to fill in.
 3. Connect the app's `router` account with the routine's **POST to** URL and **key**.
@@ -106,20 +101,26 @@ not the primary bot. Grok Bot's docs promise none of this, so treat it as observ
 
 ## Development
 
+The app lives in `app/`. Executor deploys that directory and nothing else.
+
 ```sh
+cd app
 npm install --no-package-lock
 npm run typecheck
 npm run check
 npm test
 ```
 
-Deploy with the Executor CLI:
+Deploy with the Executor CLI from the repo root:
 
 ```sh
-executor apps create --name "Grok Bot Bridge" --files .   # first time
-executor apps deploy --app <app-id> --files .              # every change
+executor apps create --name "Grok Bot Bridge" --files app   # first time
+executor apps deploy --app <app-id> --files app              # every change
 ```
 
 `apps` is pinned to the version the host runs; `executor apps framework` prints it. The wire
-contract lives in `src/protocol.ts` and, in words, in `template/router-bot.md`. Change them
+contract lives in `app/src/protocol.ts` and, in words, in `template/router-bot.md`. Change them
 together.
+
+The diagram at the top is a [HyperFrames](https://hyperframes.heygen.com) composition in
+`media/film/`. `npm run render` there writes an MP4; the GIF is that render scaled to 1200 px.

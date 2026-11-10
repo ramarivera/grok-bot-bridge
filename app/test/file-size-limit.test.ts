@@ -3,15 +3,18 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 // Biome's noExcessiveLinesPerFile skips lines inside template literals; this counts raw lines.
-const ROOT = join(import.meta.dir, "..");
-const SKIP = new Set(["node_modules", ".git"]);
+// The whole repo is covered, not only the deployed app: the template and the film are source too.
+const ROOT = join(import.meta.dir, "..", "..");
+const SKIP = new Set(["node_modules", ".git", ".hyperframes"]);
+const TEXT = /\.(ts|js|json|md|sql|html|css)$/;
 const MAX_LINES = 800;
 
 function files(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (SKIP.has(entry.name)) return [];
     const path = join(dir, entry.name);
-    return entry.isDirectory() ? files(path) : [path];
+    if (entry.isDirectory()) return files(path);
+    return TEXT.test(entry.name) ? [path] : [];
   });
 }
 

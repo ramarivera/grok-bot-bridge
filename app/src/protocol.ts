@@ -1,5 +1,5 @@
 // Wire contract between the Executor app and the router bot's routine.
-// template/routine.md describes the same contract to the bot; change both together.
+// template/router-bot.md at the repo root describes the same contract to the bot; change both.
 
 export const BRIDGE = "grok-bot-bridge/v1";
 export const MAX_BODY_BYTES = 1_048_576;

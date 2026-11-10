@@ -179,7 +179,7 @@ on desktop.
 
 ## Changing the contract
 
-`src/protocol.ts` is the same contract in code. The report format is written twice here, once in
+`app/src/protocol.ts` is the same contract in code. The report format is written twice here, once in
 the standing instructions for the reply turn and once in the routine. If you change a field name
 or a step, change all three places, then update Bridge: its standing instructions through your
 main bot, and its routine in its own chat.
