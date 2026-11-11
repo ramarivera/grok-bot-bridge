@@ -78,6 +78,42 @@ const run = await tools["grok-bot-bridge"].result({ runId });
 The prompt arrives word for word and the bot can't ask you follow-up questions, so make it
 self-contained. Use `teammates` to see who you can send to.
 
+### Concurrent requests
+
+You can fire several `dispatch` calls before any of them finish. Each one returns its own
+`runId` at once, and `result` is keyed by that id, so answers don't get mixed up.
+
+```js
+const prompts = [
+  "Reply with exactly this and nothing else: ALPHA-7319",
+  "Reply with exactly this and nothing else: BRAVO-4826",
+  "Reply with exactly this and nothing else: CHARLIE-5502",
+];
+
+const dispatched = await Promise.all(
+  prompts.map((prompt) => tools["grok-bot-bridge"].dispatch({ target: "Researcher", prompt })),
+);
+
+const runs = await Promise.all(
+  dispatched.map(({ runId }) => tools["grok-bot-bridge"].result({ runId })),
+);
+```
+
+Tested on 2026-11-11 against the same self-hosted Executor. Four dispatches were started in
+one burst, about 7 to 8 seconds apart, so they all overlapped: three to Researcher and one
+to Scourer. Each answer came back `done` on the run that sent that prompt.
+
+| runId                                      | Target     | Result       | Started (Europe/Berlin) | Finished | Duration |
+| ------------------------------------------ | ---------- | ------------ | ----------------------- | -------- | -------- |
+| `run_aa736ee1-944c-4016-bbb7-6cd3bd27953b` | Researcher | ALPHA-7319   | 19:00:04                | 19:01:02 | 58s      |
+| `run_d9d0adeb-b2dc-47f7-9133-e5a241789b90` | Researcher | BRAVO-4826   | 19:00:11                | 19:01:22 | 71s      |
+| `run_6c59c407-1dfb-4118-9998-39a100d48403` | Researcher | CHARLIE-5502 | 19:00:19                | 19:01:23 | 63s      |
+| `run_8adf2707-afbd-4b76-b7c4-c1ad64a42dc9` | Scourer    | DELTA-9174   | 19:00:27                | 19:01:23 | 56s      |
+
+Researcher finished first in 58 seconds. The other two Researcher runs and the Scourer run
+then completed within a second of each other, at 71, 63 and 56 seconds. None of the answers
+landed on the wrong run.
+
 | Tool               | What it does                                                                   |
 | ------------------ | ------------------------------------------------------------------------------ |
 | `dispatch`         | Send `prompt` to the teammate named `target`. Returns `runId` at once.         |
@@ -193,8 +229,11 @@ not the primary bot. Treat all of it as observed, not guaranteed.
   agent gets HTTP 403 `error code: 1010` and never reaches the app. curl and other common clients
   pass. The routine tells the bot to use curl or set its own user agent.
 
-Not tested yet: several dispatches at once, a teammate that takes many minutes, and a teammate that
-never replies.
+- **Several dispatches can run at once.** On 2026-11-11, four dispatches were started
+  together, three of them to Researcher. Each answer came back on the right run, in 56
+  to 71 seconds. See [Concurrent requests](#concurrent-requests).
+
+Not tested yet: a teammate that takes many minutes, and a teammate that never replies.
 
 ## Limits
 
