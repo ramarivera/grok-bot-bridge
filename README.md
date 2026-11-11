@@ -56,6 +56,12 @@ You need an Executor (self-hosted or cloud) and Grok Bot.
 5. **Test it.** Call `refreshTeammates`, then `result` with the run id it returned. `done` means the
    whole loop works.
 
+## Install from the Executor registry
+
+On Executor Cloud, open the [public listing](https://executor.sh/apps/onyxio-universe.executor.community/grok-bot-bridge)
+and choose **Make a copy**. That puts an independent copy of the app in your organization. Then continue
+from step 2 above to add the Bridge bot and link its routine.
+
 ## Using it
 
 ```js

@@ -1,5 +1,5 @@
 {
-  "name": "@executor.executor.community/grok-bot-bridge",
+  "name": "@onyxio-universe.executor.community/grok-bot-bridge",
   "private": true,
   "type": "module",
   "description": "Send prompts to Grok Bot teammates through one router bot and read their results.",
@@ -9,7 +9,7 @@
     "check": "biome check .."
   },
   "dependencies": {
-    "apps": "0.0.1-beta.95"
+    "apps": "0.0.1-beta.122"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",
