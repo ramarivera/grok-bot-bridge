@@ -58,7 +58,7 @@ You need an Executor (self-hosted or cloud) and Grok Bot.
 
 ## Install from the Executor registry
 
-On Executor Cloud, open the [public listing](https://executor.sh/apps/onyxio-universe.executor.community/grok-bot-bridge)
+On Executor Cloud, open the [public listing](https://executor.sh/apps/onyxio-universe/grok-bot-bridge)
 and choose **Make a copy**. That puts an independent copy of the app in your organization. Then continue
 from step 2 above to add the Bridge bot and link its routine.
 
